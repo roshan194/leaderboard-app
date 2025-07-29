@@ -1,7 +1,6 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const http = require('http');
 const { Server } = require('socket.io');
 const apiRoutes = require('./routes/api');
 const User = require('./models/User');
@@ -9,7 +8,7 @@ const User = require('./models/User');
 require('dotenv').config();
 
 const app = express();
-const server = http.createServer(app); // Comment out or remove for Vercel
+// const server = http.createServer(app); // Comment out or remove for Vercel
 const io = new Server({
   cors: {
     origin: [process.env.FRONTEND_URL || 'http://localhost:5173', '*'], // Dynamic for deployment
@@ -53,7 +52,3 @@ app.set('io', io);
 
 // Export for Vercel
 module.exports = app;
-
-// Remove or comment out the following for Vercel
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
