@@ -46,7 +46,12 @@ router.post('/claim', async (req, res) => {
     const leaderboard = await User.find().sort({ totalPoints: -1 });
 
     // Emit leaderboard update to all connected clients
-    req.app.get('io').emit('leaderboardUpdate', leaderboard);
+    const io = req.app.get('io');
+    if (!io) {
+      console.log('Socket.IO instance not found');
+      return res.status(500).json({ error: 'Server error' });
+    }
+    io.emit('leaderboardUpdate', leaderboard);
 
     res.json({ user, pointsClaimed, leaderboard });
   } catch (err) {
