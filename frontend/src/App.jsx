@@ -5,7 +5,9 @@ import Leaderboard from './components/Leaderboard';
 import UserSelector from './components/UserSelector';
 import ClaimHistory from './components/ClaimHistory';
 
-const socket = io('http://localhost:5001');
+
+const BACKEND_URL = import.meta.env.REACT_APP_BACKEND_URL || 'http://localhost:5001';
+const socket = io(BACKEND_URL);
 
 function App() {
   const [users, setUsers] = useState([]);
@@ -25,19 +27,31 @@ function App() {
   }, []);
 
   const fetchLeaderboard = async () => {
-    const response = await axios.get('http://localhost:5001/api/users');
-    setUsers(response.data);
+    try {
+      const response = await axios.get(`${BACKEND_URL}/api/users`);
+      setUsers(response.data);
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+    }
   };
 
   const handleClaim = async () => {
     if (!selectedUser) return;
-    const response = await axios.post('http://localhost:5001/api/claim', { userId: selectedUser });
-    setLastClaim(`Claimed ${response.data.pointsClaimed} points for ${response.data.user.name}`);
+    try {
+      const response = await axios.post(`${BACKEND_URL}/api/claim`, { userId: selectedUser });
+      setLastClaim(`Claimed ${response.data.pointsClaimed} points for ${response.data.user.name}`);
+    } catch (error) {
+      console.error('Error claiming points:', error);
+    }
   };
 
   const addUser = async (name) => {
-    await axios.post('http://localhost:5001/api/users', { name });
-    fetchLeaderboard();
+    try {
+      await axios.post(`${BACKEND_URL}/api/users`, { name });
+      fetchLeaderboard();
+    } catch (error) {
+      console.error('Error adding user:', error);
+    }
   };
 
   return (
